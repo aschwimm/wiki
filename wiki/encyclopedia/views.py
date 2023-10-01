@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from markdown2 import Markdown
 from . import util
 
@@ -9,7 +10,5 @@ def index(request):
         "entries": util.list_entries()
     })
 
-def css(request):
-    
-    print(util.get_entry(request))
-    return render(request, "encyclopedia/index.html")
+def check(request, name):
+    return HttpResponse(f"path works: {name}")
