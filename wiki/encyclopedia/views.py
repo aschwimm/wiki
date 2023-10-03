@@ -12,7 +12,14 @@ def index(request):
 
 def check(request, name):
     title = util.get_entry(name)
+    if not title:
+        return render(request, "encyclopedia/error-message.html", {
+            "name": name
+        })
     markeddown = Markdown()
     title = markeddown.convert(title)
     print(title)
-    return HttpResponse(f"path works: {name}")
+    return render(request, "encyclopedia/wiki-page.html", {
+        "entry": title,
+        "name": name
+    })
