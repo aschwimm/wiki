@@ -11,4 +11,8 @@ def index(request):
     })
 
 def check(request, name):
+    title = util.get_entry(name)
+    markeddown = Markdown()
+    title = markeddown.convert(title)
+    print(title)
     return HttpResponse(f"path works: {name}")
