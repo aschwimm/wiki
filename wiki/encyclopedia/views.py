@@ -6,6 +6,7 @@ from . import util
 
 def index(request):
     print(request)
+    print(util.list_entries())
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
     })
@@ -19,6 +20,7 @@ def check(request, name):
     markeddown = Markdown()
     title = markeddown.convert(title)
     print(title)
+    print(name)
     return render(request, "encyclopedia/wiki-page.html", {
         "entry": title,
         "name": name
