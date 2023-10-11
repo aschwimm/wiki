@@ -25,3 +25,6 @@ def check(request, name):
         "entry": title,
         "name": name
     })
+def search(request):
+    test = request.GET.get('q')
+    return HttpResponse(test)
