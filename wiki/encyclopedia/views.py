@@ -5,8 +5,6 @@ from . import util
 
 
 def index(request):
-    print(request)
-    print(util.list_entries())
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
     })
@@ -27,4 +25,19 @@ def check(request, name):
     })
 def search(request):
     test = request.GET.get('q')
-    return HttpResponse(test)
+    check_search = util.get_entry(test)
+    all_entries = util.list_entries()
+    matched_entries = []
+    if check_search:
+        markeddown = Markdown()
+        check_search = markeddown.convert(check_search)
+        return render(request, "encyclopedia/wiki-page.html", {
+            "entry": check_search,
+            "name": check_search
+        })
+    for i in all_entries:
+        if test in i:
+            matched_entries.append(i)
+    return render(request, "encyclopedia/search-page.html", {
+        "entries": matched_entries
+    })
