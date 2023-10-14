@@ -1,8 +1,11 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django import forms
 from markdown2 import Markdown
 from . import util
 
+class NewPageForm(forms.Form):
+    title = forms.CharField(widget=forms.Textarea, max_length=250)
+    body = forms.CharField(widget=forms.Textarea)
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -41,3 +44,10 @@ def search(request):
     return render(request, "encyclopedia/search-page.html", {
         "entries": matched_entries
     })
+def create(request):
+    if request.method == "GET":
+        return render(request, "encyclopedia/create-page.html", {
+            "form": NewPageForm
+        })
+    else:
+        return render(request, "encyclopedia/index.html")
