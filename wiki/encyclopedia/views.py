@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django import forms
 from markdown2 import Markdown
+from django.http import HttpResponse
 from . import util
 
 class NewPageForm(forms.Form):
-    title = forms.CharField(widget=forms.Textarea, max_length=250)
-    body = forms.CharField(widget=forms.Textarea)
+    title = forms.CharField(widget=forms.Textarea, min_length=1 ,max_length=250)
+    content = forms.CharField(widget=forms.Textarea, min_length=1)
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -49,5 +50,14 @@ def create(request):
         return render(request, "encyclopedia/create-page.html", {
             "form": NewPageForm
         })
+    elif request.method == "POST":
+        form = NewPageForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            if util.get_entry(title):
+                return render(request, "encyclopedia/error-for-entry.html", {
+                    "entry": title
+                })
+            return HttpResponse(title)
     else:
         return render(request, "encyclopedia/index.html")
