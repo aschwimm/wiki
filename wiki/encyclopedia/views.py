@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django import forms
 from markdown2 import Markdown
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from . import util
 
 class NewPageForm(forms.Form):
@@ -54,10 +55,13 @@ def create(request):
         form = NewPageForm(request.POST)
         if form.is_valid():
             title = form.cleaned_data["title"]
+            content = form.cleaned_data["content"]
             if util.get_entry(title):
                 return render(request, "encyclopedia/error-for-entry.html", {
                     "entry": title
                 })
-            return HttpResponse(title)
+            else:
+                util.save_entry(title, content)
+                return redirect(f"/wiki/{title}")
     else:
         return render(request, "encyclopedia/index.html")
