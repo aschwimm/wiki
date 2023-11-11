@@ -65,3 +65,9 @@ def create(request):
                 return redirect(f"/wiki/{title}")
     else:
         return render(request, "encyclopedia/index.html")
+    
+def edit_wiki(request, name):
+    if request.method == "GET":
+        return render(request, "encyclopedia/edit-page.html", {
+            "title": name
+        })
