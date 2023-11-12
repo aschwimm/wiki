@@ -4,4 +4,10 @@
 {% endblock %}
 {% block body %}
     <h1>This is where the entry for {{ title }} edited</h1>
+    <form action="{% url 'edit-page' name=title %}" method="post">
+    {% csrf_token %}
+        {{ title }}
+        {{ form }}
+    <input type="submit" value="Save">
+    </form>
 {% endblock %}

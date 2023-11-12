@@ -4,8 +4,9 @@ from markdown2 import Markdown
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from . import util
+import random
 
-class NewPageForm(forms.Form):
+class EntryForm(forms.Form):
     title = forms.CharField(widget=forms.Textarea, min_length=1 ,max_length=250)
     content = forms.CharField(widget=forms.Textarea, min_length=1)
 
@@ -28,6 +29,7 @@ def check(request, name):
         "entry": title,
         "name": name
     })
+
 def search(request):
     test = request.GET.get('q')
     check_search = util.get_entry(test)
@@ -46,13 +48,14 @@ def search(request):
     return render(request, "encyclopedia/search-page.html", {
         "entries": matched_entries
     })
+
 def create(request):
     if request.method == "GET":
         return render(request, "encyclopedia/create-page.html", {
-            "form": NewPageForm
+            "form": EntryForm
         })
     elif request.method == "POST":
-        form = NewPageForm(request.POST)
+        form = EntryForm(request.POST)
         if form.is_valid():
             title = form.cleaned_data["title"]
             content = form.cleaned_data["content"]
@@ -68,6 +71,27 @@ def create(request):
     
 def edit_wiki(request, name):
     if request.method == "GET":
-        return render(request, "encyclopedia/edit-page.html", {
-            "title": name
+        form = EntryForm(request.GET)
+        title = name
+        content = util.get_entry(title)
+        form = EntryForm(initial = {
+            "title": title,
+            "content": content
         })
+        return render(request, "encyclopedia/edit-page.html", {
+            "title": title,
+            "form": form
+        })
+    if request.method == "POST":
+        form = EntryForm(request.POST)
+        if form.is_valid():
+            if util.get_entry(name):
+                title = form.cleaned_data['title']
+                content = form.cleaned_data['content']
+                util.save_entry(title, content)
+                return redirect(f"/wiki/{title}")
+
+def random_entry(request):
+    entries = util.list_entries()
+    entry_name = random.choice(entries)
+    return redirect(f"/wiki/{entry_name}")
